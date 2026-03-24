@@ -1,0 +1,41 @@
+ @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap');
+        
+:root {
+            --primary-dark: #2b6fbd;
+            --accent-gold: #1d1a16;
+            --soft-cream: #f9f7f2;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--soft-cream);
+            color: var(--primary-dark);
+            scroll-behavior: smooth;
+        }
+
+        .serif { font-family: 'Cormorant Garamond', serif; }
+        .text-gold { color: var(--accent-gold); }
+        .bg-luxury { background-color: var(--primary-dark); }
+        
+        /* Animación sutil de hover para links */
+        .nav-link::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 1px;
+            background: var(--accent-gold);
+            transition: width .4s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        .image-container { overflow: hidden; }
+        .image-container img { transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1); }
+        .image-container:hover img { transform: scale(1.05); }
+
+        .image-reveal {
+            clip-path: inset(0 100% 0 0);
+            transition: clip-path 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .image-reveal.active {
+            clip-path: inset(0 0 0 0);
+        }

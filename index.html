@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rosa Ducuara | Odontología de Alta Especialidad</title>
+    <script src="https://cdn.tailwindcss.com">//Importamos las librerías de Tailwind CSS (Framework de diseño)</script> 
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js">//Importamos la librería GSAP (Para animaciones dinámicas dentro de la página)</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js">//Importamos el módulo ScrollTrigger de GSAP (Para animaciones basadas en el desplazamiento o scroll)</script>
+    <script src="https://unpkg.com/lucide@latest">//Importamos el paquete Lucide (Iconos)</script>
+</head>
+<body class="antialiased">
+
+<!--Menú superior con las secciones del consultorio -->
+    <nav class="fixed w-full z-50 px-10 py-8 flex justify-between items-center transition-all duration-700" id="main-nav">
+        <div class="flex items-center">
+            <span class="serif text-2xl font-light tracking-[0.2em] uppercase">Consultorio</span>
+        </div>
+        <div class="hidden md:flex items-center gap-12 text-[10px] uppercase tracking-[0.3em] font-medium">
+            <a href="#inicio" class="nav-link">Inicio</a>
+            <a href="#nosotros" class="nav-link">Nosotros</a>
+            <a href="Tratamientos.html" class="nav-link">Tratamientos</a>
+            <div id="auth-display" class="flex gap-10">
+                <button onclick="toggleModal('modal-auth')" class="nav-link">INICIAR SESIÓN</button>
+            </div>
+            <button onclick="handleBookingClick()" class="border border-gold/40 px-10 py-3 hover:bg-luxury hover:text-black transition-all duration-500">
+                Agendar Cita
+            </button>
+        </div>
+    </nav>
+<!-- Sección de Inicio - Hero section -->
+    <section id="inicio" class="min-h-screen flex items-center justify-center pt-20 px-8">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
+            <div class="reveal">
+                <span class="text-gold text-[10px] tracking-[0.5em] uppercase mb-6 block">Consultorio Odontológico - Rosa Ducuara</span>
+                <h1 class="serif text-7xl md:text-6xl leading-[0.85] mb-10">
+                    Mejorando <br> <span class="italic font-light">Sonrisas.</span>
+                </h1>
+                <p class="text-[11px] tracking-[0.2em] uppercase text-slate-400 mb-12 max-w-sm leading-relaxed">
+                   En nuestro consultorio, nos dedicamos a mejorar tu sonrisa con tratamientos personalizados y tecnología de vanguardia.
+                </p>
+
+                <!-- Este botón permite agendar una cita, solo se puede agendar si el usuario está autenticado -->
+                <button onclick="handleBookingClick()" class="bg-luxury text-white px-12 py-6 text-[10px] uppercase tracking-[0.3em] hover:bg-sky-700 transition-all">
+                    Agendar tu cita
+                </button>
+            </div>
+            <div class="relative image-container">
+                <img src="https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&q=80" alt="Clinic Interior" class="w-full h-[80vh] object-cover rounded-sm grayscale-[0.2]">
+            </div>
+        </div>
+    </section>
+<!-- Sección de Nosotros -->
+    <section id="nosotros" class="py-40 bg-white">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="grid md:grid-cols-12 gap-20 items-center">
+                <div class="md:col-span-6 order-2 md:order-1">
+                    <div class="image-container shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80" alt="Doctor" class="w-full h-[70vh] object-cover">
+                    </div>
+                </div>
+                <div class="md:col-span-6 order-1 md:order-2">
+                    <span class="text-gold serif italic text-2xl mb-6 block">¿Quién es Rosa Ducuara?</span>
+                    <h2 class="serif text-5xl md:text-6xl mb-10 leading-tight">Auxiliar de  <br> Odontología.</h2>
+                    <div class="space-y-8 text-slate-500 text-sm leading-loose font-light tracking-wide">
+                        <p>
+                            En el consultorio de <b>Rosa Ducuara</b>, trabajamos para brindarte una sonrisa saludable y estética que refleje absoluta confianza. Contamos con tecnología de vanguardia que permite ofrecer tratamientos personalizados, adaptados a la anatomía de cada paciente.
+                        </p>
+                        <p class="italic border-l border-gold pl-8">
+                            "Nuestro objetivo es acompañarte en cada etapa del proceso, asegurando comodidad, seguridad y resultados duraderos, porque creemos que una sonrisa bien cuidada transforma tu calidad de vida".
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- Sección de Servicios que ofrece el consultorio -->
+    <section id="tratamientos" class="py-40 px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-24 gap-10">
+                <div>
+                    <span class="text-gold text-[10px] tracking-[0.5em] uppercase mb-4 block">Tratamientos Integrales</span>
+                    <h2 class="serif text-6xl md:text-7xl">Servicios <br> <span class="italic"></span></h2>
+                </div>
+                <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 max-w-xs leading-relaxed">
+                    Aqui encontraras todos los servicios que ofrecemos actualmente con fines de mejorar tu sonrisa.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-100 border border-slate-100 shadow-sm">
+                <div class="bg-white p-16 group hover:bg-luxury transition-all duration-700 cursor-pointer">
+                    <span class="text-gold serif text-xl block mb-10">I.</span>
+                    <h3 class="serif text-3xl mb-6 group-hover:text-black transition-colors">Odontología General</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed group-hover:text-slate-900 transition-colors">
+                         <a href="Tratamientos.html" class="text-gold hover:text-sky-700 transition-colors">Sistemas de prevención y diagnóstico avanzado para el mantenimiento de la salud estructural oral.</a>
+                    </p>
+                   <!-- El boton los lleva a la página de detalles del tratamiento -->
+                    <a href="Tratamientos.html" class="mt-4 text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-sky-700 transition-colors">
+                        Ver Detalles
+                    </a>
+
+                </div>
+                <div class="bg-white p-16 group hover:bg-luxury transition-all duration-700 cursor-pointer">
+                    <span class="text-gold serif text-xl block mb-10">II.</span>
+                    <h3 class="serif text-3xl mb-6 group-hover:text-black transition-colors">Ortodoncia</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed group-hover:text-slate-900 transition-colors">
+                         <a href="Tratamientos.html" class="text-gold hover:text-sky-700 transition-colors">Corrección geométrica dental mediante ortopedia funcional y sistemas de alineación invisible.</a>
+                    </p>
+                    <!-- El boton los lleva a la página de detalles del tratamiento -->
+                    <a href="Tratamientos.html" class="mt-4 text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-sky-700 transition-colors">
+                        Ver Detalles
+                    </a>
+
+                </div>
+                <div class="bg-white p-16 group hover:bg-luxury transition-all duration-700 cursor-pointer">
+                    <span class="text-gold serif text-xl block mb-10">III.</span>
+                    <h3 class="serif text-3xl mb-6 group-hover:text-black  transition-colors">Higiene Oral</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed group-hover:text-slate-900 transition-colors">
+                         <a href="Tratamientos.html" class="text-gold hover:text-sky-700 transition-colors">Protocolos de limpieza profunda y profilaxis técnica para la prevención de enfermedades periodontales.</a>
+                    </p>
+                    <!-- El boton los lleva a la página de detalles del tratamiento -->
+                    <a href="Tratamientos.html" class="mt-4 text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-sky-700 transition-colors">
+                        Ver Detalles
+                    </a>
+
+                </div>
+                <div class="bg-white p-16 group hover:bg-luxury transition-all duration-700 cursor-pointer">
+                    <span class="text-gold serif text-xl block mb-10">IV.</span>
+                    <h3 class="serif text-3xl mb-6 group-hover:text-black transition-colors">Retenedores</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed group-hover:text-slate-900 transition-colors">
+                       <a href="Tratamientos.html" class="text-gold hover:text-sky-700 transition-colors">Diseño y ajuste de dispositivos de estabilización post-ortodoncia para resultados permanentes.</a>
+                    </p>
+                    <!-- El boton los lleva a la página de detalles del tratamiento -->
+                    <a href="Tratamientos.html" class="mt-4 text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-sky-700 transition-colors">
+                        Ver Detalles
+                    </a>
+
+                </div>
+                <div class="bg-white p-16 group hover:bg-luxury transition-all duration-700 cursor-pointer">
+                    <span class="text-gold serif text-xl block mb-10">V.</span>
+                    <h3 class="serif text-3xl mb-6 group-hover:text-black transition-colors">Estética Dental</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed group-hover:text-slate-900 transition-colors">
+                         <a href="Tratamientos.html" class="text-gold hover:text-sky-700 transition-colors">Restauraciones morfológicas y aclaramiento dental con estándares de naturalidad absoluta.</a>
+                    </p>
+                    <!-- El boton los lleva a la página de detalles del tratamiento -->
+                    <a href="Tratamientos.html" class="mt-4 text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-sky-700 transition-colors">
+                        Ver Detalles
+                    </a>
+
+                </div>
+                <div class="bg-luxury p-16 flex flex-col justify-center items-center text-center">
+                    <h3 class="serif text-2xl text-white italic mb-6">¿Requiere una evaluación personalizada?</h3>
+                    <!-- Este botón permite agendar una cita, solo se puede agendar si el usuario está autenticado -->
+                    <button onclick="handleBookingClick()" class="text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-white transition-colors">Consultar disponibilidad</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pie de página del consultorio -->
+    <footer class="py-20 px-10 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto flex flex-col md:row justify-between items-center gap-10">
+            <span class="serif text-xl tracking-widest uppercase opacity-50">Rosa Ducuara</span>
+            <div class="flex gap-12 text-[9px] uppercase tracking-[0.4em] text-slate-400">
+                <!-- Poner las redes sociales y enlaces -->
+                <a href="#" class="hover:text-gold transition-colors">Privacidad</a>
+                <a href="#" class="hover:text-gold transition-colors">Términos</a>
+                <a href="#" class="hover:text-gold transition-colors">Instagram</a>
+            </div>
+            <p class="text-[9px] text-slate-300 tracking-[0.2em] uppercase">© 2026 Dental Architecture</p>
+        </div>
+    </footer>
+<!-- Modal de autenticación (Logueo y registro de usuario) -->
+   <div id="modal-auth" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-luxury/90 backdrop-blur-md">
+    <div class="bg-white w-full max-w-xl p-12 md:p-16 rounded-sm shadow-2xl relative overflow-y-auto max-h-[90vh]">
+        <!-- Este botón cierra el modal con una "X" -->
+        <button onclick="toggleModal('modal-auth')" class="absolute top-8 right-8 text-slate-300 hover:text-luxury transition-colors">   
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Interfaz de inicio de sesión -->
+        <div id="login-view">
+            <span class="text-gold text-[9px] tracking-[0.4em] uppercase mb-2 block">Bienvenido de nuevo</span>
+            <h2 class="serif text-5xl mb-10">Acceso Cliente</h2>
+            <div class="space-y-6">
+                <input type="email" id="l-email" placeholder="Correo electrónico" class="w-full border-b border-slate-200 py-3 text-sm focus:border-gold outline-none bg-transparent transition-colors">
+                <input type="password" id="l-pass" placeholder="Contraseña" class="w-full border-b border-slate-200 py-3 text-sm focus:border-gold outline-none bg-transparent transition-colors">
+                
+                <button onclick="executeLogin()" class="w-full bg-luxury text-white py-5 text-[10px] uppercase tracking-[0.3em] mt-6 hover:bg-opacity-95 transition-all">
+                    Ingresar al Portal
+                </button>
+                
+                <p class="text-[10px] text-center uppercase tracking-widest text-slate-400 mt-8">
+                    ¿No tiene una cuenta activa? <button onclick="switchView('register')" class="text-gold font-bold ml-1">Crear Cuenta</button>
+                </p>
+            </div>
+        </div>
+
+        <!-- Interfaz de registro de usuarios -->
+        <div id="register-view" class="hidden">
+            <span class="text-gold text-[9px] tracking-[0.4em] uppercase mb-2 block">Ingresa tus datos</span>
+            <h2 class="serif text-5xl mb-8">Registro</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <div class="col-span-2">
+                    <label class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-1 block">Nombre Completo</label>
+                    <input type="text" id="r-name" placeholder="Ej. Juan Pérez" class="w-full border-b border-slate-200 py-2 text-sm focus:border-gold outline-none bg-transparent">
+                </div>
+                
+                <div>
+                    <label class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-1 block">Documento ID</label>
+                    <input type="text" id="r-doc" placeholder="Número de identificación" class="w-full border-b border-slate-200 py-2 text-sm focus:border-gold outline-none bg-transparent">
+                </div>
+                
+                <div>
+                    <label class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-1 block">Teléfono</label>
+                    <input type="tel" id="r-phone" placeholder="Móvil de contacto" class="w-full border-b border-slate-200 py-2 text-sm focus:border-gold outline-none bg-transparent">
+                </div>
+
+                <div class="col-span-2">
+                    <label class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-1 block">Correo Electrónico</label>
+                    <input type="email" id="r-email" placeholder="usuario@ejemplo.com" class="w-full border-b border-slate-200 py-2 text-sm focus:border-gold outline-none bg-transparent">
+                </div>
+
+                <div class="col-span-2">
+                    <label class="text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-1 block">Contraseña</label>
+                    <input type="password" id="r-pass" placeholder="••••••••" class="w-full border-b border-slate-200 py-2 text-sm focus:border-gold outline-none bg-transparent">
+                </div>
+            </div>
+            
+            <button onclick="executeRegister()" class="w-full bg-luxury text-white py-5 text-[10px] uppercase tracking-[0.3em] mt-10 hover:shadow-xl transition-all">
+                Confirmar Registro
+            </button>
+            
+            <p class="text-[10px] text-center uppercase tracking-widest text-slate-400 mt-8">
+                ¿Ya es cliente de la clínica? <button onclick="switchView('login')" class="text-gold font-bold ml-1">Volver al acceso</button>
+            </p>
+        </div>
+    </div>
+</div>
+
+    <script src="script.js">//Importamos el archivo de JavaScript con la lógica de autenticación, animaciones y manejo de eventos </script>
+</body>
+</html>
