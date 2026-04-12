@@ -52,6 +52,3 @@ class Usuario:
         
 prueba = Usuario("juan", "C:C", 1111, "1234", "name@gmail")
 
-prueba.__esAdmin = True
-
-print(prueba.__esAdmin)
