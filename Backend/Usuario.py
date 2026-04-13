@@ -53,3 +53,7 @@ class Usuario:
 prueba = Usuario("juan", "C:C", 1111, "1234", "name@gmail")
 
 print(prueba.getCorreo)
+
+prueba.__esAdmin = True
+
+print(prueba.__esAdmin)
