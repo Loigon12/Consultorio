@@ -1,10 +1,12 @@
-import Usuario
+from Usuario import Usuario
+from datetime import date
+from datetime import time
 class Cita:
 
-    def __init__(self, fecha, hora, usuario, id = None):
+    def __init__(self, fecha : date, hora : time, usuario : Usuario, id = None):
         self.__fecha = fecha
         self.__hora = hora
-        self.__usuario = Usuario(usuario)
+        self.__usuario = usuario
         self.__id = id
 
     def getDia(self):
@@ -18,3 +20,12 @@ class Cita:
     
     def getId(self):
         return self.__id
+
+
+"""
+usuario = Usuario("juan", "C:C", 1111, "1234", "name@gmail",)
+cita1 = Cita(date(2026, 4, 13), time(11, 26, 0), usuario, 1 )
+
+print(cita1.getDia())
+print(cita1.getUsuario().getNombre())
+"""
