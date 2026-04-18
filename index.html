@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js">//Importamos la librería GSAP (Para animaciones dinámicas dentro de la página)</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js">//Importamos el módulo ScrollTrigger de GSAP (Para animaciones basadas en el desplazamiento o scroll)</script>
     <script src="https://unpkg.com/lucide@latest">//Importamos el paquete Lucide (Iconos)</script>
+    
 </head>
 <body class="antialiased">
 
@@ -17,7 +18,7 @@
         <div class="flex items-center">
             <span class="serif text-2xl font-light tracking-[0.2em] uppercase">Consultorio</span>
         </div>
-        <div class="hidden md:flex items-center gap-12 text-[10px] uppercase tracking-[0.3em] font-medium">
+        <div class="hidden md:flex items-center gap-12 text-[11px] uppercase tracking-[0.3em] font-medium">
             <a href="#inicio" class="nav-link">Inicio</a>
             <a href="#nosotros" class="nav-link">Nosotros</a>
             <a href="Tratamientos.html" class="nav-link">Tratamientos</a>
@@ -31,10 +32,10 @@
     </nav>
 <!-- Sección de Inicio - Hero section -->
     <section id="inicio" class="min-h-screen flex items-center justify-center pt-20 px-8">
-        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-22 items-center">
             <div class="reveal">
                 <span class="text-gold text-[10px] tracking-[0.5em] uppercase mb-6 block">Consultorio Odontológico - Rosa Ducuara</span>
-                <h1 class="serif text-7xl md:text-6xl leading-[0.85] mb-10">
+                <h1 class="serif text-7xl md:text-9xl leading-[0.76] mb-10">
                     Mejorando <br> <span class="italic font-light">Sonrisas.</span>
                 </h1>
                 <p class="text-[11px] tracking-[0.2em] uppercase text-slate-400 mb-12 max-w-sm leading-relaxed">
@@ -62,7 +63,7 @@
                 </div>
                 <div class="md:col-span-6 order-1 md:order-2">
                     <span class="text-gold serif italic text-2xl mb-6 block">¿Quién es Rosa Ducuara?</span>
-                    <h2 class="serif text-5xl md:text-6xl mb-10 leading-tight">Auxiliar de  <br> Odontología.</h2>
+                    <h2 class="serif text-5xl md:text-6xl mb-10 leading-tight">Auxiliar de  <br> Odontología e Higienista Oral</h2>
                     <div class="space-y-8 text-slate-500 text-sm leading-loose font-light tracking-wide">
                         <p>
                             En el consultorio de <b>Rosa Ducuara</b>, trabajamos para brindarte una sonrisa saludable y estética que refleje absoluta confianza. Contamos con tecnología de vanguardia que permite ofrecer tratamientos personalizados, adaptados a la anatomía de cada paciente.
@@ -78,7 +79,7 @@
 <!-- Sección de Servicios que ofrece el consultorio -->
     <section id="tratamientos" class="py-40 px-8">
         <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-24 gap-10">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-53 gap-10">
                 <div>
                     <span class="text-gold text-[10px] tracking-[0.5em] uppercase mb-4 block">Tratamientos Integrales</span>
                     <h2 class="serif text-6xl md:text-7xl">Servicios <br> <span class="italic"></span></h2>
@@ -239,7 +240,8 @@
         </div>
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+   
     <script src="JavaScript/script.js">//Importamos el archivo de JavaScript con la lógica de autenticación, animaciones y manejo de eventos </script>
 </body>
 </html>

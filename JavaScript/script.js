@@ -107,3 +107,182 @@
                 ease: "power2.out"
             });
         });
+
+      
+/**
+ * CONFIGURACIÓN DE SUPABASE
+ */
+const SUPABASE_URL = 'https://dademmbghkpndygsmwcu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZGVtbWJnaGtwbmR5Z3Ntd2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzgxNTIsImV4cCI6MjA5MjExNDE1Mn0.AAdZaCJ3hmgHIchQASqNrNd1HdOqYiimFmjMUb3-kVg';
+
+// Usamos 'supabaseClient' para evitar conflictos con la librería global
+let supabaseClient;
+
+try {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch (error) {
+    console.error("DETALLE DEL ERROR:", error); // específicamente para errores de inicialización
+    alert("Error: " + (error.message || "Error desconocido"));
+}
+
+/**
+ * MANEJO DE LA INTERFAZ (MODALES Y VISTAS)
+ */
+function toggleModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.classList.toggle('hidden');
+    }
+}
+
+function switchView(view) {
+    const loginView = document.getElementById('login-view');
+    const registerView = document.getElementById('register-view');
+    
+    if (view === 'register') {
+        loginView.classList.add('hidden');
+        registerView.classList.remove('hidden');
+    } else {
+        registerView.classList.add('hidden');
+        loginView.classList.remove('hidden');
+    }
+}
+
+/**
+ * LÓGICA DE REGISTRO DE USUARIOS
+ */
+async function executeRegister() {
+    // Obtenemos los valores de los inputs
+    const nombre = document.getElementById('r-name').value.trim();
+    const documento = document.getElementById('r-doc').value.trim();
+    const telefono = document.getElementById('r-phone').value.trim();
+    const email = document.getElementById('r-email').value.trim();
+    const password = document.getElementById('r-pass').value.trim();
+
+    // Validación básica
+    if (!email || !password || !nombre || !documento) {
+        alert("Por favor, completa los campos obligatorios (Nombre, Documento, Correo y Contraseña).");
+        return;
+    }
+
+    try {
+        // 1. Crear el usuario en el sistema de autenticación de Supabase
+        const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+            email: email,
+            password: password,
+        });
+
+        if (authError) throw authError;
+
+        if (authData.user) {
+            // 2. Guardar los datos adicionales en la tabla 'perfiles'
+            const { error: profileError } = await supabaseClient
+                .from('perfiles')
+                .insert([
+                    { 
+                        id: authData.user.id, 
+                        nombre_completo: nombre, 
+                        documento: documento, 
+                        telefono: telefono,
+                        correo: email 
+                    }
+                ]);
+
+            if (profileError) throw profileError;
+
+            alert("¡Registro exitoso! Ya puedes iniciar sesión.");
+            switchView('login'); // Redirigir al login dentro del modal
+        }
+    } catch (error) {
+        console.error("Error en registro:", error);
+        alert("No se pudo completar el registro: " + error.message);
+    }
+}
+
+/**
+ * LÓGICA DE INICIO DE SESIÓN
+ */
+async function executeLogin() {
+    const email = document.getElementById('l-email').value.trim();
+    const password = document.getElementById('l-pass').value.trim();
+
+    if (!email || !password) {
+        alert("Ingresa correo y contraseña.");
+        return;
+    }
+
+    try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
+
+        if (error) throw error;
+
+        alert("Ingreso exitoso.");
+        toggleModal('modal-auth');
+        checkUser(); // Actualizar la interfaz inmediatamente
+    } catch (error) {
+        console.error("Error en login:", error);
+        alert("Error de acceso: " + error.message);
+    }
+}
+
+/**
+ * GESTIÓN DE SESIÓN Y ESTADO DE LA UI
+ */
+async function checkUser() {
+    if (!supabaseClient) return;
+
+    try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        const authDisplay = document.getElementById('auth-display');
+
+        if (user && authDisplay) {
+            // Usuario está logueado: Mostramos su nombre/correo y botón de cerrar sesión
+            const displayName = user.email.split('@')[0].toUpperCase();
+            authDisplay.innerHTML = `
+                <div class="flex items-center gap-6">
+                    <span class="text-[10px] text-gold tracking-[0.2em] font-medium">HOLA, ${displayName}</span>
+                    <button onclick="logout()" class="nav-link text-[10px] opacity-60 hover:opacity-100">CERRAR SESIÓN</button>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.log("No hay sesión activa.");
+    }
+}
+
+async function logout() {
+    await supabaseClient.auth.signOut();
+    location.reload(); // Recargar para limpiar el estado de la web
+}
+
+/**
+ * CONTROL DE AGENDAMIENTO
+ */
+function handleBookingClick() {
+    supabaseClient.auth.getUser().then(({ data }) => {
+        if (data.user) {
+            // Aquí puedes redirigir a tu formulario de citas o mostrar otro modal
+            alert("Accediendo al sistema de citas...");
+            window.location.href = "#"; // Cambiar por la URL real
+        } else {
+            alert("Para agendar una cita, primero debes iniciar sesión.");
+            toggleModal('modal-auth');
+        }
+    });
+}
+
+/**
+ * INICIALIZACIÓN AL CARGAR LA PÁGINA
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    // Verificar si hay una sesión activa al abrir la web
+    checkUser();
+
+    // Inicializar iconos de Lucide (X del modal, etc)
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
