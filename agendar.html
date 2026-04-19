@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Cita - Consultorio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-blue-50 flex items-center justify-center min-h-screen font-sans">
+    <style>
+        body {
+            background-color: #dbeafe;
+        }
+    </style>
+
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md border border-gray-100">
+        <h2 class="text-3xl font-light text-blue-700 text-center mb-6 tracking-wide">Agendar Cita</h2>
+        
+        <form id="form-cita" class="space-y-5">
+            <div>
+                <label class="block text-xs text-gray-500 uppercase tracking-widest mb-1">Servicio</label>
+                <select id="c-servicio" class="w-full bg-blue-50 text-gray-800 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    <option value="" disabled selected>Seleccione un tratamiento...</option>
+                    <option value="Odontología General">Odontología General</option>
+                    <option value="Ortodoncia">Ortodoncia</option>
+                    <option value="Higiene Oral">Higiene Oral</option>
+                    <option value="Retenedores">Retenedores</option>
+                    <option value="Estetica Dental">Estetica Dental</option>   
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs text-gray-500 uppercase tracking-widest mb-1">Fecha</label>
+                    <input type="date" id="c-fecha" class="w-full bg-blue-50 text-gray-800 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 uppercase tracking-widest mb-1">Hora</label>
+                    <input type="time" id="c-hora" class="w-full bg-blue-50 text-gray-800 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300" min="08:00" max="18:00">
+                </div>
+            </div>
+
+            <button type="button" onclick="agendarCita()" class="w-full bg-blue-600 text-white font-medium tracking-widest py-3 rounded hover:bg-blue-700 transition duration-300 mt-4">
+                CONFIRMAR RESERVA
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://dademmbghkpndygsmwcu.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZGVtbWJnaGtwbmR5Z3Ntd2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzgxNTIsImV4cCI6MjA5MjExNDE1Mn0.AAdZaCJ3hmgHIchQASqNrNd1HdOqYiimFmjMUb3-kVg';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function agendarCita() {
+            const servicio = document.getElementById('c-servicio').value;
+            const fecha = document.getElementById('c-fecha').value;
+            const hora = document.getElementById('c-hora').value;
+
+            if (!servicio || !fecha || !hora) {
+                alert("Por favor completa todos los campos.");
+                return;
+            }
+
+            // 1. Obtener el usuario actual
+            const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+            
+            if (userError || !userData.user) {
+                alert("Debes iniciar sesión para agendar una cita.");
+                return;
+            }
+
+            // 2. Insertar la cita en la base de datos
+            const { error: insertError } = await supabaseClient
+                .from('citas')
+                .insert([{
+                    usuario_id: userData.user.id,
+                    servicio: servicio,
+                    fecha: fecha,
+                    hora: hora
+                }]);
+
+            if (insertError) {
+                console.error(insertError);
+                alert("Error al agendar: " + insertError.message);
+            } else {
+                alert("¡Cita solicitada con éxito! Está pendiente de confirmación.");
+                document.getElementById('form-cita').reset();
+            }
+        }
+    </script>
+</body>
+</html>

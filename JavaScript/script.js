@@ -23,16 +23,19 @@
         }
 
         // Función para manejar el clic en "Agendar Cita", verifica si el usuario está autenticado antes de permitir el acceso al sistema de agenda
-        function handleBookingClick() {
-            const user = JSON.parse(localStorage.getItem('clinic_session'));
-            if (!user) {
-                alert("Por favor, acceda a su cuenta para gestionar citas premium.");
-                toggleModal('modal-auth');
-            } else {
-                alert("Redirigiendo al sistema de agenda...");
-            }
-        }
+        async function handleBookingClick() {
+    // 1. Verificamos si hay un usuario activo en la sesión de Supabase
+    const { data: { user } } = await supabaseClient.auth.getUser();
 
+    if (user) {
+        // 2. Si el usuario existe, lo mandamos a la interfaz de agendamiento
+        window.location.href = "agendar.html";
+    } else {
+        // 3. Si no hay sesión, lanzamos la alerta y abrimos el modal de autenticación
+        alert("Necesita registrarse o iniciar sesión para agendar una cita.");
+        toggleModal('modal-auth');
+    }
+}
         // Función de registro de usuario (Mock)
         function executeRegister() {
             // Mock Register
@@ -239,17 +242,31 @@ async function checkUser() {
         const authDisplay = document.getElementById('auth-display');
 
         if (user && authDisplay) {
-            // Usuario está logueado: Mostramos su nombre/correo y botón de cerrar sesión
-            const displayName = user.email.split('@')[0].toUpperCase();
+            // 1. Buscamos el nombre en la tabla 'perfiles' usando el ID del usuario
+            const { data: perfil, error } = await supabaseClient
+                .from('perfiles')
+                .select('nombre_completo')
+                .eq('id', user.id)
+                .single();
+
+            // 2. Si hay error o no hay perfil, usamos el email como respaldo
+            let nombreMostrar = user.email.split('@')[0];
+            
+            if (perfil && perfil.nombre_completo) {
+                // Tomamos solo el primer nombre para que se vea más limpio
+                nombreMostrar = perfil.nombre_completo.split(' ')[0];
+            }
+
+            // 3. Actualizamos la interfaz
             authDisplay.innerHTML = `
                 <div class="flex items-center gap-6">
-                    <span class="text-[10px] text-gold tracking-[0.2em] font-medium">HOLA, ${displayName}</span>
-                    <button onclick="logout()" class="nav-link text-[10px] opacity-60 hover:opacity-100">CERRAR SESIÓN</button>
+                    <span class="text-[12px] text-gold  font-medium">Hola, ${nombreMostrar.toUpperCase()}</span>
+                    <button onclick="logout()" class="nav-link text-[12px] opacity-60 hover:opacity-100">CERRAR SESIÓN</button>
                 </div>
             `;
         }
     } catch (error) {
-        console.log("No hay sesión activa.");
+        console.log("No hay sesión activa o hubo un error al obtener el perfil.");
     }
 }
 
@@ -261,17 +278,29 @@ async function logout() {
 /**
  * CONTROL DE AGENDAMIENTO
  */
-function handleBookingClick() {
-    supabaseClient.auth.getUser().then(({ data }) => {
-        if (data.user) {
-            // Aquí puedes redirigir a tu formulario de citas o mostrar otro modal
-            alert("Accediendo al sistema de citas...");
-            window.location.href = "#"; // Cambiar por la URL real
+async function handleBookingClick() {
+    const loadingOverlay = document.getElementById('loading-overlay');
+
+    try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+
+        if (user) {
+            // 1. Mostramos la interfaz de carga
+            loadingOverlay.classList.remove('hidden');
+            loadingOverlay.classList.add('flex');
+
+            // 2. Pequeña pausa estética antes de redirigir
+            setTimeout(() => {
+                window.location.href = "agendar.html";
+            }, 800);
+            
         } else {
             alert("Para agendar una cita, primero debes iniciar sesión.");
             toggleModal('modal-auth');
         }
-    });
+    } catch (error) {
+        console.error("Error al verificar sesión:", error);
+    }
 }
 
 /**

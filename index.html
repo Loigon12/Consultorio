@@ -16,39 +16,39 @@
 <!--Menú superior con las secciones del consultorio -->
     <nav class="fixed w-full z-50 px-10 py-8 flex justify-between items-center transition-all duration-700" id="main-nav">
         <div class="flex items-center">
-            <span class="serif text-2xl font-light tracking-[0.2em] uppercase">Consultorio</span>
+            <span class="serif text-2xl font-light uppercase">Consultorio</span>
         </div>
-        <div class="hidden md:flex items-center gap-12 text-[11px] uppercase tracking-[0.3em] font-medium">
+        <div class="hidden md:flex items-center gap-8 text-[14px] uppercase  font-medium">
             <a href="#inicio" class="nav-link">Inicio</a>
             <a href="#nosotros" class="nav-link">Nosotros</a>
             <a href="Tratamientos.html" class="nav-link">Tratamientos</a>
             <div id="auth-display" class="flex gap-10">
                 <button onclick="toggleModal('modal-auth')" class="nav-link">INICIAR SESIÓN</button>
             </div>
-            <button onclick="handleBookingClick()" class="border border-gold/40 px-10 py-3 hover:bg-luxury hover:text-black transition-all duration-500">
-                Agendar Cita
-            </button>
+            <button onclick="handleBookingClick()" class="bg-luxury text-white px-4 py-3 text-[12px] uppercase hover:bg-sky-900 transition-all">
+                    Consultar Citas
+                </button>
         </div>
     </nav>
 <!-- Sección de Inicio - Hero section -->
     <section id="inicio" class="min-h-screen flex items-center justify-center pt-20 px-8">
         <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-22 items-center">
             <div class="reveal">
-                <span class="text-gold text-[10px] tracking-[0.5em] uppercase mb-6 block">Consultorio Odontológico - Rosa Ducuara</span>
-                <h1 class="serif text-7xl md:text-9xl leading-[0.76] mb-10">
+                <span class="text-gold text-[16px] mb-6 ">Consultorio Odontológico - Rosa Ducuara</span>
+                <h1 class="serif text-7xl md:text-8xl leading-[0.76] mb-10">
                     Mejorando <br> <span class="italic font-light">Sonrisas.</span>
                 </h1>
-                <p class="text-[11px] tracking-[0.2em] uppercase text-slate-400 mb-12 max-w-sm leading-relaxed">
+                <p class="text-[16px]  text-slate-800 mb-12 max-w-sm leading-relaxed">
                    En nuestro consultorio, nos dedicamos a mejorar tu sonrisa con tratamientos personalizados y tecnología de vanguardia.
                 </p>
 
                 <!-- Este botón permite agendar una cita, solo se puede agendar si el usuario está autenticado -->
-                <button onclick="handleBookingClick()" class="bg-luxury text-white px-12 py-6 text-[10px] uppercase tracking-[0.3em] hover:bg-sky-700 transition-all">
+                <button onclick="handleBookingClick()" class="bg-luxury text-white px-12 py-6 text-[12px] uppercase hover:bg-sky-900 transition-all">
                     Agendar tu cita
                 </button>
             </div>
             <div class="relative image-container">
-                <img src="Images/Hero.jpeg" alt="Clinic Interior" class="w-full h-[80vh] object-cover rounded-sm grayscale-[0.2]">
+                <img src="Images/consultorio.jpeg" alt="Clinic Interior" class="w-full h-[80vh] object-cover rounded-sm grayscale-[0.2]">
             </div>
         </div>
     </section>
@@ -84,7 +84,7 @@
                     <span class="text-gold text-[10px] tracking-[0.5em] uppercase mb-4 block">Tratamientos Integrales</span>
                     <h2 class="serif text-6xl md:text-7xl">Servicios <br> <span class="italic"></span></h2>
                 </div>
-                <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 max-w-xs leading-relaxed">
+                <p class="text-[13px] uppercase  text-slate-600 max-w-xs leading-relaxed">
                     Aqui encontraras todos los servicios que ofrecemos actualmente con fines de mejorar tu sonrisa.
                 </p>
             </div>
@@ -98,7 +98,7 @@
                     </p>
                    <!-- El boton los lleva a la página de detalles del tratamiento -->
                     <a href="Tratamientos.html" class="mt-4 text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-sky-700 transition-colors">
-                        Ver Detalles
+                        <button class="bg-transparent border-none cursor-pointer">Ver Detalles</button>
                     </a>
 
                 </div>
@@ -110,7 +110,7 @@
                     </p>
                     <!-- El boton los lleva a la página de detalles del tratamiento -->
                     <a href="Tratamientos.html" class="mt-4 text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-sky-700 transition-colors">
-                        Ver Detalles
+                        <button class="bg-transparent border-none cursor-pointer">Ver Detalles</button>
                     </a>
 
                 </div>
@@ -122,7 +122,7 @@
                     </p>
                     <!-- El boton los lleva a la página de detalles del tratamiento -->
                     <a href="Tratamientos.html" class="mt-4 text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-sky-700 transition-colors">
-                        Ver Detalles
+                        <button class="bg-transparent border-none cursor-pointer">Ver Detalles</button>
                     </a>
 
                 </div>
@@ -134,7 +134,7 @@
                     </p>
                     <!-- El boton los lleva a la página de detalles del tratamiento -->
                     <a href="Tratamientos.html" class="mt-4 text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-sky-700 transition-colors">
-                        Ver Detalles
+                        <button class="bg-transparent border-none cursor-pointer">Ver Detalles</button>
                     </a>
 
                 </div>
@@ -146,7 +146,7 @@
                     </p>
                     <!-- El boton los lleva a la página de detalles del tratamiento -->
                     <a href="Tratamientos.html" class="mt-4 text-gold text-[10px] tracking-[0.3em] uppercase border-b border-gold pb-2 hover:text-sky-700 transition-colors">
-                        Ver Detalles
+                        <button class="bg-transparent border-none cursor-pointer">Ver Detalles</button>
                     </a>
 
                 </div>
@@ -158,6 +158,57 @@
             </div>
         </div>
     </section>
+
+    <section id="ubicacion" class="py-40 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-8">
+        <div class="grid md:grid-cols-2 gap-20 items-center">
+            
+            <div class="reveal">
+                <span class="text-gold text-[10px] tracking-[0.5em] uppercase mb-4 block">Encuéntranos</span>
+                <h2 class="serif text-6xl mb-10 italic">Nuestra Sede</h2>
+                
+                <div class="space-y-12">
+                    <div>
+                        <h4 class="serif text-xl mb-2 text-blue-900">Dirección</h4>
+                        <p class="text-slate-500 text-sm font-light leading-relaxed">
+                            Carrera 5 # 10-15, Edificio Profesional<br>
+                            Ibagué, Tolima - Colombia
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 class="serif text-xl mb-2 text-blue-900">Horarios de Atención</h4>
+                        <div class="text-slate-500 text-sm font-light space-y-1">
+                            <p>Lunes a Viernes: 8:00 AM — 6:00 PM</p>
+                            <p>Sábados: 9:00 AM — 1:00 PM</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="serif text-xl mb-2 text-blue-900">Contacto Directo</h4>
+                        <p class="text-slate-500 text-sm font-light">citas@rosaducuara.com</p>
+                        <p class="text-gold text-lg mt-2 font-medium">+57 (315) 123 4567</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative h-[600px] w-full shadow-2xl rounded-sm overflow-hidden grayscale-[0.3] hover:grayscale-0 transition-all duration-700">
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0" 
+                    scrolling="no" 
+                    marginheight="0" 
+                    marginwidth="0" 
+                    src="https://maps.google.com/maps?q=Ibague%2C%20Tolima&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                    style="border:0;"
+                    allowfullscreen="" 
+                    loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</section>
 
     <!-- Pie de página del consultorio -->
     <footer class="py-20 px-10 border-t border-slate-200">
@@ -241,7 +292,10 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-   
-    <script src="JavaScript/script.js">//Importamos el archivo de JavaScript con la lógica de autenticación, animaciones y manejo de eventos </script>
+<script src="JavaScript/script.js">//Importamos el archivo de JavaScript con la lógica de autenticación, animaciones y manejo de eventos </script>
+<div id="loading-overlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[9999] hidden flex flex-col items-center justify-center transition-opacity duration-500">
+    <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+    <p class="text-[10px] tracking-[0.3em] text-blue-900 font-light uppercase">Accediendo al sistema de citas</p>
+</div>
 </body>
 </html>
