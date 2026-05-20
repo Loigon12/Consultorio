@@ -1,9 +1,10 @@
  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap');
-        
+
+/* Variables de color para la paleta de colores */
 :root {
             --primary-dark: #2b6fbd;
             --accent-gold: #1d1a16;
-            --soft-cream: #f9f7f2;
+            --soft-cream: #f1f9fa;
         }
 
         body { 

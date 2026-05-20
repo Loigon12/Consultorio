@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - Solicitudes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #dbeafe; /* Fondo azul claro */
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans text-gray-800">
+
+    <div id="login-container" class="min-h-screen flex items-center justify-center px-4">
+        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm border border-gray-100">
+            <h2 class="text-2xl font-light text-blue-800 text-center mb-6 tracking-wide">Ingrese Credenciales</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-500 uppercase tracking-widest mb-1">Usuario</label>
+                    <input type="text" id="admin-user" class="w-full bg-blue-50 text-gray-800 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 uppercase tracking-widest mb-1">Contraseña</label>
+                    <input type="password" id="admin-pass" class="w-full bg-blue-50 text-gray-800 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
+                </div>
+                <button onclick="iniciarSesionAdmin()" class="w-full bg-blue-700 text-white font-medium tracking-widest py-3 rounded hover:bg-blue-800 transition duration-300 mt-2">
+                    INGRESAR
+                </button>
+                <p id="login-error" class="text-red-500 text-xs text-center hidden mt-2">Credenciales incorrectas.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-container" class="hidden max-w-6xl mx-auto p-8">
+        <div class="flex justify-between items-center mb-8 border-b pb-4">
+            <h2 class="text-3xl font-light text-blue-800">Gestión de Citas e Historial</h2>
+            <div class="space-x-2">
+                <button onclick="cargarCitas()" class="text-xs bg-white border border-gray-200 px-4 py-2 rounded hover:bg-gray-50 transition shadow-sm">Actualizar</button>
+                <button onclick="cerrarSesionAdmin()" class="text-xs bg-red-50 text-red-600 border border-red-100 px-4 py-2 rounded hover:bg-red-100 transition shadow-sm">Salir</button>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden mb-10">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-blue-50 text-gray-500 text-xs uppercase tracking-widest">
+                        <th class="p-4 border-b font-medium">Paciente</th>
+                        <th class="p-4 border-b font-medium">Fecha y Hora</th>
+                        <th class="p-4 border-b font-medium">Servicio</th>
+                        <th class="p-4 border-b font-medium text-center">Acciones / Historial</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-citas" class="text-sm text-gray-700">
+                    </tbody>
+            </table>
+        </div>
+
+        <div id="seccion-historial" class="hidden bg-white p-6 rounded-lg shadow-inner border-l-4 border-blue-500">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-blue-900" id="nombre-paciente-historial">Historial del Paciente</h3>
+                <button onclick="cerrarHistorial()" class="text-red-500 hover:underline text-sm uppercase tracking-tighter">Cerrar Historial</button>
+            </div>
+            <div id="lista-historial" class="space-y-3">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://dademmbghkpndygsmwcu.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZGVtbWJnaGtwbmR5Z3Ntd2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzgxNTIsImV4cCI6MjA5MjExNDE1Mn0.AAdZaCJ3hmgHIchQASqNrNd1HdOqYiimFmjMUb3-kVg';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Ya no cargamos las citas automáticamente al abrir la página, 
+        // ahora esperamos a que el admin inicie sesión.
+
+        // --- LÓGICA DE LOGIN ---
+        async function iniciarSesionAdmin() {
+            const usuario = document.getElementById('admin-user').value.trim();
+            const password = document.getElementById('admin-pass').value.trim();
+            const msgError = document.getElementById('login-error');
+
+            if (!usuario || !password) return;
+
+            // Consultar a Supabase si existe ese usuario y contraseña
+            const { data, error } = await supabaseClient
+                .from('administradores')
+                .select('*')
+                .eq('usuario', usuario)
+                .eq('password', password)
+                .single();
+
+            if (data) {
+                // Login exitoso: Ocultar login, mostrar dashboard y cargar datos
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('dashboard-container').classList.remove('hidden');
+                msgError.classList.add('hidden');
+                cargarCitas(); 
+            } else {
+                // Login fallido
+                msgError.classList.remove('hidden');
+            }
+        }
+
+        function cerrarSesionAdmin() {
+            // Recargar la página limpia todo el estado visual y vuelve al login
+            window.location.reload();
+        }
+
+        // --- LÓGICA DEL PANEL (Existente) ---
+        async function cargarCitas() {
+            const tbody = document.getElementById('tabla-citas');
+            tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">Cargando datos...</td></tr>';
+            
+            const { data: citas, error } = await supabaseClient
+                .from('citas')
+                .select(`*, perfiles ( nombre_completo )`)
+                .order('fecha', { ascending: false });
+
+            if (error) { console.error(error); return; }
+
+            tbody.innerHTML = '';
+            citas.forEach(cita => {
+                const nombre = cita.perfiles ? cita.perfiles.nombre_completo : 'Usuario Desconocido';
+                const fila = `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-4 font-bold text-blue-900">${nombre}</td>
+                        <td class="p-4">${cita.fecha} | ${cita.hora}</td>
+                        <td class="p-4">${cita.servicio}</td>
+                        <td class="p-4 text-center space-x-2">
+                            ${cita.estado === 'pendiente' ? `
+                                <button onclick="actualizarEstado('${cita.id}', 'aceptada')" class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs transition">Aceptar</button>
+                                <button onclick="actualizarEstado('${cita.id}', 'denegada')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition">Denegar</button>
+                            ` : `<span class="text-xs font-medium uppercase ${cita.estado === 'aceptada' ? 'text-green-600' : 'text-red-600'}">${cita.estado}</span>`}
+                            
+                            <button onclick="verHistorial('${cita.usuario_id}', '${nombre}')" class="ml-4 text-blue-600 hover:text-blue-800 underline text-xs">Ver Historial</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += fila;
+            });
+        }
+
+        async function verHistorial(usuarioId, nombre) {
+            const seccion = document.getElementById('seccion-historial');
+            const lista = document.getElementById('lista-historial');
+            const titulo = document.getElementById('nombre-paciente-historial');
+
+            seccion.classList.remove('hidden');
+            titulo.innerText = `Historial de: ${nombre}`;
+            lista.innerHTML = '<p class="text-sm text-gray-500">Cargando historial...</p>';
+
+            const { data: historial, error } = await supabaseClient
+                .from('citas')
+                .select('*')
+                .eq('usuario_id', usuarioId)
+                .order('fecha', { ascending: false });
+
+            if (error) return;
+
+            lista.innerHTML = '';
+            historial.forEach(h => {
+                lista.innerHTML += `
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded border border-gray-100">
+                        <div>
+                            <p class="text-sm font-medium text-gray-800">${h.servicio}</p>
+                            <p class="text-xs text-gray-500">${h.fecha} a las ${h.hora}</p>
+                        </div>
+                        <span class="text-[10px] px-2 py-1 rounded-full uppercase font-bold ${h.estado === 'aceptada' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">
+                            ${h.estado}
+                        </span>
+                    </div>
+                `;
+            });
+            seccion.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cerrarHistorial() {
+            document.getElementById('seccion-historial').classList.add('hidden');
+        }
+
+        async function actualizarEstado(id, nuevo) {
+            await supabaseClient.from('citas').update({ estado: nuevo }).eq('id', id);
+            cargarCitas();
+        }
+    </script>
+</body>
+</html>
