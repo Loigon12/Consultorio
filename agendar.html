@@ -1,93 +1,313 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agendar Cita - Consultorio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agendar Cita</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<style>
+/* ════════════════════════════════════════════
+   🎨 TOKENS — ajusta aquí escala y colores
+   ════════════════════════════════════════════ */
+:root {
+  /* Paleta */
+  --clr-bg:       #eff6ff;   /* fondo de página */
+  --clr-card:     #ffffff;   /* fondo tarjeta   */
+  --clr-primary:  #194ddc;   /* azul principal  */
+  --clr-primary-h:#000000;   /* hover botón     */
+  --clr-field:    #006dfb2d; /* fondo inputs    */
+  --clr-border:   #000000;   /* bordes          */
+  --clr-txt:      #000000;   /* texto principal */
+  --clr-muted:    #000000;   /* texto secundario*/
+  --clr-taken:    #e2e8f0;   /* hora ocupada bg */
+  --clr-taken-t:  #ff0000;   /* hora ocupada fg */
+  --clr-sel:      #0044ffba; /* hora seleccion  */
+
+  /* Escala */
+  --card-w:     600px;      /* ancho tarjeta     */
+  --card-p:     5rem;       /* padding tarjeta   */
+  --radius:     12px;       /* radio base        */
+  --radius-sm:  8px;        /* radio pequeño     */
+  --gap:        1.5rem;     /* espacio entre secciones */
+  --font-base:  px;         /* tamaño fuente     */
+  --font-lbl:   14px;       /* etiquetas         */
+  --btn-h:      42px;       /* alto botón CTA    */
+}
+
+/* ── Reset mínimo ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--clr-bg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: var(--font-base);
+  padding: 2rem 1rem;
+}
+
+/* ── Tarjeta ── */
+.card {
+  background: var(--clr-card);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 24px rgba(0,0,0,.10);
+  padding: var(--card-p);
+  width: 100%;
+  max-width: var(--card-w);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+h2 {
+  text-align: center;
+  font-size: 4rem;
+  font-weight: 400;
+  color: var(--clr-primary);
+  letter-spacing: .03em;
+}
+
+/* ── Etiquetas y campos ── */
+label {
+  display: block;
+  font-size: var(--font-lbl);
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--clr-muted);
+  margin-bottom: 20px;
+}
+
+select, input[type="text"] {
+  width: 100%;
+  background: var(--clr-field);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--clr-txt);
+  font-size: var(--font-base);
+  outline: none;
+  transition: border-color .2s, background .2s;
+  cursor: pointer;
+}
+select:focus, input[type="text"]:focus {
+  border-color: var(--clr-border);
+  background: #fff;
+}
+
+/* ── Grid de horas ── */
+#grid-horas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+#grid-horas button {
+  padding: 9px 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--clr-border);
+  background: #fff;
+  color: var(--clr-primary);
+  font-size: var(--font-lbl);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+#grid-horas button:hover:not(:disabled) {
+  background: var(--clr-field);
+  border-color: var(--clr-primary);
+}
+#grid-horas button.selected {
+  background: var(--clr-sel);
+  color: #fff;
+  border-color: var(--clr-sel);
+}
+#grid-horas button:disabled {
+  background: var(--clr-taken);
+  color: var(--clr-taken-t);
+  text-decoration: line-through;
+  border-color: var(--clr-taken);
+  cursor: not-allowed;
+}
+
+/* ── CTA ── */
+#btn-confirmar {
+  width: 100%;
+  height: var(--btn-h);
+  background: var(--clr-primary);
+  color: #fff;
+  font-size: var(--font-lbl);
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background .2s, opacity .2s;
+}
+#btn-confirmar:hover  { background: var(--clr-primary-h); }
+#btn-confirmar:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ── Mensaje estado ── */
+#msg { text-align: center; font-size: var(--font-lbl); color: var(--clr-muted); min-height: 16px; }
+
+/* ── Flatpickr override: ocultar área de horas ── */
+#wrap-horas { display: none; }
+#wrap-horas.visible { display: block; }
+</style>
 </head>
-<body class="bg-blue-50 flex items-center justify-center min-h-screen font-sans">
-    <style>
-        body {
-            background-color: #dbeafe;
-        }
-    </style>
+<body>
 
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md border border-gray-100">
-        <h2 class="text-3xl font-light text-blue-700 text-center mb-6 tracking-wide">Agendar Cita</h2>
-        
-        <form id="form-cita" class="space-y-5">
-            <div>
-                <label class="block text-xs text-gray-500 uppercase tracking-widest mb-1">Servicio</label>
-                <select id="c-servicio" class="w-full bg-blue-50 text-gray-800 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
-                    <option value="" disabled selected>Seleccione un tratamiento...</option>
-                    <option value="Odontología General">Odontología General</option>
-                    <option value="Ortodoncia">Ortodoncia</option>
-                    <option value="Higiene Oral">Higiene Oral</option>
-                    <option value="Retenedores">Retenedores</option>
-                    <option value="Estetica Dental">Estetica Dental</option>   
-                </select>
-            </div>
+<div class="card">
+  <h2>Agendar Cita</h2>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs text-gray-500 uppercase tracking-widest mb-1">Fecha</label>
-                    <input type="date" id="c-fecha" class="w-full bg-blue-50 text-gray-800 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 uppercase tracking-widest mb-1">Hora</label>
-                    <input type="time" id="c-hora" class="w-full bg-blue-50 text-gray-800 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300" min="08:00" max="18:00">
-                </div>
-            </div>
+  <!-- Servicio -->
+  <div>
+    <label>Servicio</label>
+    <select id="c-servicio">
+      <option value="" disabled selected>Selecciona un tratamiento…</option>
+      <option>Odontología General</option>
+      <option>Ortodoncia</option>
+      <option>Higiene Oral</option>
+      <option>Retenedores</option>
+      <option>Estética Dental</option>
+    </select>
+  </div>
 
-            <button type="button" onclick="agendarCita()" class="w-full bg-blue-600 text-white font-medium tracking-widest py-3 rounded hover:bg-blue-700 transition duration-300 mt-4">
-                CONFIRMAR RESERVA
-            </button>
-        </form>
-    </div>
+  <!-- Fecha -->
+  <div>
+    <label>Fecha</label>
+    <input type="text" id="c-fecha" placeholder="Selecciona un día…" readonly>
+  </div>
 
-    <script>
-        const SUPABASE_URL = 'https://dademmbghkpndygsmwcu.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZGVtbWJnaGtwbmR5Z3Ntd2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzgxNTIsImV4cCI6MjA5MjExNDE1Mn0.AAdZaCJ3hmgHIchQASqNrNd1HdOqYiimFmjMUb3-kVg';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  <!-- Horas -->
+  <div id="wrap-horas">
+    <label>Horario disponible</label>
+    <div id="grid-horas"></div>
+  </div>
 
-        async function agendarCita() {
-            const servicio = document.getElementById('c-servicio').value;
-            const fecha = document.getElementById('c-fecha').value;
-            const hora = document.getElementById('c-hora').value;
+  <p id="msg"></p>
+  <button id="btn-confirmar" disabled onclick="agendarCita()">Confirmar reserva</button>
+</div>
 
-            if (!servicio || !fecha || !hora) {
-                alert("Por favor completa todos los campos.");
-                return;
-            }
+<script>
+/* ══════════════════════════════════════════
+   ⚙️  CONFIGURACIÓN — edita aquí
+   ══════════════════════════════════════════ */
+const CFG = {
+  supabaseUrl: 'https://dademmbghkpndygsmwcu.supabase.co',
+  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZGVtbWJnaGtwbmR5Z3Ntd2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzgxNTIsImV4cCI6MjA5MjExNDE1Mn0.AAdZaCJ3hmgHIchQASqNrNd1HdOqYiimFmjMUb3-kVg',
 
-            // 1. Obtener el usuario actual
-            const { data: userData, error: userError } = await supabaseClient.auth.getUser();
-            
-            if (userError || !userData.user) {
-                alert("Debes iniciar sesión para agendar una cita.");
-                return;
-            }
+  // Slots por tipo de día (agrega, quita o cambia libremente)
+  slots: {
+    semana:  ['08:00','08:30','09:00','09:30','10:00','10:30',
+              '11:00','11:30','14:00','14:30','15:00','15:30',
+              '16:00','16:30','17:00','17:30'],
+    sabado:  ['08:00','08:30','09:00','09:30','10:00','10:30',
+              '11:00'],
+    domingo: []   // vacío = día bloqueado en el calendario
+  }
+};
 
-            // 2. Insertar la cita en la base de datos
-            const { error: insertError } = await supabaseClient
-                .from('citas')
-                .insert([{
-                    usuario_id: userData.user.id,
-                    servicio: servicio,
-                    fecha: fecha,
-                    hora: hora
-                }]);
+/* ── Inicializar Supabase ── */
+const db = supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey);
+let fechaSel = null, horaSel = null;
 
-            if (insertError) {
-                console.error(insertError);
-                alert("Error al agendar: " + insertError.message);
-            } else {
-                alert("¡Cita solicitada con éxito! Está pendiente de confirmación.");
-                document.getElementById('form-cita').reset();
-            }
-        }
-    </script>
+/* ── Flatpickr ── */
+flatpickr('#c-fecha', {
+  locale: 'es',
+  minDate: 'today',
+  disable: [d => d.getDay() === 0],   // bloquear domingos
+  onChange([date], str) {
+    fechaSel = str;
+    horaSel  = null;
+    cargarHoras(date, str);
+  }
+});
+
+/* ── Cargar horas ── */
+async function cargarHoras(date, fecha) {
+  const grid = document.getElementById('grid-horas');
+  const wrap = document.getElementById('wrap-horas');
+  wrap.classList.add('visible');
+  grid.innerHTML = '<span style="font-size:12px;color:var(--clr-muted)">Cargando…</span>';
+
+  const { data = [] } = await db.from('citas').select('hora').eq('fecha', fecha);
+  const ocupadas = new Set(data.map(r => r.hora.slice(0, 5)));
+
+  const esSabado = date.getDay() === 6;
+  const slots    = esSabado ? CFG.slots.sabado : CFG.slots.semana;
+
+  grid.innerHTML = '';
+  slots.forEach(h => {
+    const btn = document.createElement('button');
+    btn.textContent = h;
+    if (ocupadas.has(h)) {
+      btn.disabled = true;
+    } else {
+      btn.onclick = () => {
+        grid.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        horaSel = h;
+        syncBtn();
+      };
+    }
+    grid.appendChild(btn);
+  });
+
+  syncBtn();
+}
+
+/* ── Activar/desactivar botón confirmar ── */
+function syncBtn() {
+  document.getElementById('btn-confirmar').disabled = !(fechaSel && horaSel);
+}
+
+/* ── Agendar ── */
+async function agendarCita() {
+  const servicio = document.getElementById('c-servicio').value;
+  if (!servicio) { alert('Selecciona un servicio.'); return; }
+
+  const msg = document.getElementById('msg');
+  const btn = document.getElementById('btn-confirmar');
+  btn.disabled = true;
+  msg.textContent = 'Verificando disponibilidad…';
+
+  // Re-verificar que el slot sigue libre
+  const { data: check } = await db.from('citas').select('id')
+    .eq('fecha', fechaSel).eq('hora', horaSel).limit(1);
+  if (check?.length) {
+    alert('Ese horario acaba de ser reservado. Elige otro.');
+    msg.textContent = '';
+    await cargarHoras(new Date(fechaSel + 'T12:00'), fechaSel);
+    horaSel = null;
+    return;
+  }
+
+  const { data: { user }, error: uErr } = await db.auth.getUser();
+  if (uErr || !user) { alert('Debes iniciar sesión.'); msg.textContent = ''; btn.disabled = false; return; }
+
+  msg.textContent = 'Guardando…';
+  const { error } = await db.from('citas').insert([
+    { usuario_id: user.id, servicio, fecha: fechaSel, hora: horaSel }
+  ]);
+
+  if (error) {
+    alert('Error: ' + error.message);
+  } else {
+    alert('¡Cita solicitada! Pendiente de confirmación.');
+    document.getElementById('c-servicio').selectedIndex = 0;
+    document.getElementById('c-fecha')._flatpickr.clear();
+    document.getElementById('wrap-horas').classList.remove('visible');
+    fechaSel = horaSel = null;
+  }
+  msg.textContent = '';
+  syncBtn();
+}
+</script>
 </body>
 </html>
