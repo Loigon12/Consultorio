@@ -139,31 +139,51 @@ async function executeRegister() {
 
 
 /**
- * LÓGICA DE INICIO DE SESIÓN
+ * LÓGICA DE INICIO DE SESIÓN CENTRALIZADO
  */
 async function executeLogin() {
-    const email = document.getElementById('l-email').value.trim();
+    // Nota: l-email ahora puede recibir tanto correos como el texto "admin"
+    const identificador = document.getElementById('l-email').value.trim();
     const password = document.getElementById('l-pass').value.trim();
 
-    if (!email || !password) {
-        alert("Ingresa correo y contraseña.");
+    if (!identificador || !password) {
+        alert("Ingresa tu usuario/correo y contraseña.");
         return;
     }
 
     try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: email,
+        // 1. PRIMERA VALIDACIÓN: Verificar si es el Administrador
+        const { data: adminCheck, error: adminError } = await supabaseClient
+            .from('administradores')
+            .select('*')
+            .eq('usuario', identificador)
+            .eq('password', password)
+            .maybeSingle();
+
+        if (adminCheck) {
+            // Es un administrador válido
+            alert("Acceso de Administrador detectado. Redirigiendo al panel...");
+            localStorage.setItem('isAdmin', 'true'); // Guardar sesión local
+            window.location.href = "admin.html";
+            return; // Detenemos la ejecución aquí
+        }
+
+        // 2. SEGUNDA VALIDACIÓN: Intentar inicio de sesión normal en Auth para pacientes
+        const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+            email: identificador,
             password: password,
         });
 
-        if (error) throw error;
+        if (authError) throw authError;
 
-        alert("Ingreso exitoso.");
-        toggleModal('modal-auth');
-        checkUser(); 
+        if (authData.user) {
+            alert("Ingreso exitoso.");
+            toggleModal('modal-auth');
+            checkUser(); 
+        }
     } catch (error) {
         console.error("Error en login:", error);
-        alert("Error de acceso: " + error.message);
+        alert("Credenciales incorrectas o usuario no encontrado.");
     }
 }
 
