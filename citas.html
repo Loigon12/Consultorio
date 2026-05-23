@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Reservas | Clínica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; } </style>
+</head>
+<body class="min-h-screen text-slate-800 antialiased p-6 md:p-12">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold tracking-tight">Mi Historial de Citas</h1>
+            <a href="index.html" class="text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-2">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver al inicio
+            </a>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+                            <th class="p-4 pl-6">Fecha y Hora</th>
+                            <th class="p-4">Servicio</th>
+                            <th class="p-4">Estado</th>
+                            <th class="p-4 pr-6">Diagnóstico / Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-mis-citas" class="text-sm divide-y divide-slate-100">
+                        <tr><td colspan="4" class="p-8 text-center text-slate-400">Cargando tus reservas...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://dademmbghkpndygsmwcu.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZGVtbWJnaGtwbmR5Z3Ntd2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzgxNTIsImV4cCI6MjA5MjExNDE1Mn0.AAdZaCJ3hmgHIchQASqNrNd1HdOqYiimFmjMUb3-kVg';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function cargarMisCitas() {
+            lucide.createIcons();
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            if (!user) {
+                window.location.href = "index.html"; // Redirigir si no hay sesión
+                return;
+            }
+
+            const { data: citas, error } = await supabaseClient
+                .from('citas')
+                .select('*')
+                .eq('usuario_id', user.id)
+                .order('fecha', { ascending: false });
+
+            const tbody = document.getElementById('tabla-mis-citas');
+            tbody.innerHTML = '';
+
+            if (error || citas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-400">No tienes reservas realizadas.</td></tr>';
+                return;
+            }
+
+            citas.forEach(cita => {
+                let badge = '';
+                if (cita.estado === 'pendiente') badge = '<span class="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full text-xs font-bold">Pendiente</span>';
+                else if (cita.estado === 'aceptada') badge = '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-bold">Confirmada</span>';
+                else badge = '<span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-xs font-bold">Denegada</span>';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4 pl-6 font-medium">${cita.fecha} a las ${cita.hora}</td>
+                        <td class="p-4">${cita.servicio}</td>
+                        <td class="p-4">${badge}</td>
+                        <td class="p-4 pr-6 text-slate-500 italic text-xs">${cita.diagnostico || 'Sin observaciones'}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarMisCitas);
+    </script>
+</body>
+</html>

@@ -212,10 +212,11 @@ async function checkUser() {
             }
 
             authDisplay.innerHTML = `
-                <div class="flex items-center gap-6">
-                    <span class="text-[12px] text-gold font-medium">Hola, ${nombreMostrar.toUpperCase()}</span>
-                    <button onclick="logout()" class="nav-link text-[12px] opacity-60 hover:opacity-100">CERRAR SESIÓN</button>
-                </div>
+                <div class="flex items-center gap-4">
+            <span class="text-[12px] text-gold font-medium">Hola, ${nombreMostrar.toUpperCase()}</span>
+            <a href="citas.html" class="nav-link w-full text-center md:w-auto">MIS RESERVAS</a>
+            <button onclick="logout()" class="nav-link text-[12px] opacity-60 hover:opacity-100">CERRAR SESIÓN</button>
+        </div>
             `;
         }
     } catch (error) {

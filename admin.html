@@ -234,10 +234,21 @@
             }
         }
 
-        async function actualizarEstado(id, nuevoEstado) {
-            await supabaseClient.from('citas').update({ estado: nuevoEstado }).eq('id', id);
-            cargarCitas();
+        async function actualizarEstado(id, nuevoEstado, emailPaciente = null) {
+        const { error } = await supabaseClient.from('citas').update({ estado: nuevoEstado }).eq('id', id);
+    
+        if (!error && nuevoEstado === 'aceptada' && emailPaciente) {
+        try {
+            await emailjs.send('service_consultorio', 'template_confirmada', {
+                email_paciente: emailPaciente
+            });
+            console.log("Correo de confirmación enviado");
+            } catch (err) {
+            console.error("Error al enviar correo de confirmación:", err);
+            }
         }
+        cargarCitas();
+}
 
         async function verHistorial(usuarioId, nombre) {
             const seccion = document.getElementById('seccion-historial');
