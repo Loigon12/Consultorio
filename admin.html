@@ -228,11 +228,25 @@
         }
 
         async function eliminarCita(id) {
-            if (confirm("¿Seguro que deseas eliminar permanentemente esta cita?")) {
-                await supabaseClient.from('citas').delete().eq('id', id);
-                cargarCitas();
-            }
+    if (confirm("¿Seguro que deseas eliminar permanentemente esta cita?")) {
+        // Capturamos el error que devuelva Supabase
+        const { error } = await supabaseClient
+            .from('citas')
+            .delete()
+            .eq('id', id);
+
+        // Si hay un error (ej. permisos o conexión), lo mostramos
+        if (error) {
+            console.error("Error al eliminar en Supabase:", error);
+            alert("No se pudo eliminar la cita: " + error.message);
+            return; // Detenemos la función para que no recargue la tabla
         }
+
+        // Si no hay error, confirmamos y actualizamos la vista
+        alert("Cita eliminada correctamente.");
+        cargarCitas();
+    }
+}
 
         async function actualizarEstado(id, nuevoEstado, emailPaciente = null) {
         const { error } = await supabaseClient.from('citas').update({ estado: nuevoEstado }).eq('id', id);
