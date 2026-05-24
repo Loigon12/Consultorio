@@ -113,7 +113,7 @@ async function executeRegister() {
         if (authError) throw authError;
 
         if (authData.user) {
-            // 2. 🌟 SOLUCIÓN: Usamos .upsert() para fusionar los datos con el trigger sin duplicar llaves
+            // 2. SOLUCIÓN: Usamos .upsert() para fusionar los datos con el trigger sin duplicar llaves
             const { error: profileError } = await supabaseClient
                 .from('perfiles')
                 .upsert([
