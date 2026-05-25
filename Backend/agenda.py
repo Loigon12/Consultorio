@@ -26,7 +26,7 @@ class Agenda:
         else:
             for i in self.__fechasDisponibles:
                 
-               print(i)
+                print(i)
 
     def mostrarHoras(self):
         if self.__horasDisponibles == None:
@@ -34,7 +34,7 @@ class Agenda:
         else:
             for i in self.__horasDisponibles:
                 
-               print(i)
+                print(i)
 
 fechas = [date]
 fechas.append(date(2026, 4, 14))
