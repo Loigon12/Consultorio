@@ -1,132 +1,71 @@
 // Inicialización de librerías y plugins
-        lucide.createIcons();
-        gsap.registerPlugin(ScrollTrigger);
+lucide.createIcons();
+gsap.registerPlugin(ScrollTrigger);
 
-        // UI Logic
-        const nav = document.getElementById('main-nav');
+// UI Logic
+const nav = document.getElementById('main-nav');
 
-        // Cambia el estilo del menú al hacer scroll para mejorar la legibilidad y la experiencia de usuario
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                nav.classList.add('bg-white/80', 'backdrop-blur-md', 'py-5', 'shadow-sm');
-                nav.classList.remove('py-8');
-            } else {
-                nav.classList.remove('bg-white/80', 'backdrop-blur-md', 'py-5', 'shadow-sm');
-                nav.classList.add('py-8');
-            }
-        });
-
-        // Función para mostrar u ocultar el modal de autenticación
-        function toggleModal(id) {
-            const m = document.getElementById(id);
-            m.classList.toggle('hidden');
-        }
-
-        // Función para manejar el clic en "Agendar Cita", verifica si el usuario está autenticado antes de permitir el acceso al sistema de agenda
-        function handleBookingClick() {
-            const user = JSON.parse(localStorage.getItem('clinic_session'));
-            if (!user) {
-                alert("Por favor, acceda a su cuenta para gestionar citas premium.");
-                toggleModal('modal-auth');
-            } else {
-                alert("Redirigiendo al sistema de agenda...");
-            }
-        }
-
-        // Función de registro de usuario (Mock)
-        function executeRegister() {
-            // Mock Register
-            const email = document.getElementById('r-email').value;
-            const password = document.getElementById('r-pass').value;
-            if(email && password) {
-                localStorage.setItem('clinic_session', JSON.stringify({ name: "Paciente", email }));
-                toggleModal('modal-auth');
-            }
-        }
-
-        // Función de inicio de sesión (Mock)
-
-        function executeLogin() {
-            // Mock Login
-            const email = document.getElementById('l-email').value;
-            if(email) {
-                localStorage.setItem('clinic_session', JSON.stringify({ name: "Paciente", email }));
-                location.reload();
-            }
-        }
-
-        // Animaciones
-        gsap.from(".reveal", { y: 50, opacity: 0, duration: 1.2, ease: "power4.out" });
-
-        // Función para intercambiar vistas dentro del modal (Intercalar entre el inicio de sesión y el registro)
-    function switchView(view) {
-        const login = document.getElementById('login-view');
-        const register = document.getElementById('register-view');
-        
-        if (view === 'register') {
-            login.classList.add('hidden');
-            register.classList.remove('hidden');
-        } else {
-            login.classList.remove('hidden');
-            register.classList.add('hidden');
-        }
+// Cambia el estilo del menú al hacer scroll para mejorar la legibilidad y la experiencia de usuario
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+        nav.classList.add('bg-white/80', 'backdrop-blur-md', 'py-5', 'shadow-sm');
+        nav.classList.remove('py-8');
+    } else {
+        nav.classList.remove('bg-white/80', 'backdrop-blur-md', 'py-5', 'shadow-sm');
+        nav.classList.add('py-8');
     }
+});
+
+// Animaciones iniciales
+gsap.from(".reveal", { y: 50, opacity: 0, duration: 1.2, ease: "power4.out" });
+
+// Animación de entrada para los textos al hacer scroll
+gsap.utils.toArray('.reveal-text').forEach(section => {
+    gsap.from(section, {
+        scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+        },
+        y: 50,
+        opacity: 0,
+        duration: 1.5,
+        ease: "power4.out"
+    });
+});
+
+// Animación suave de aparición para las imágenes
+gsap.utils.toArray('img').forEach(img => {
+    gsap.from(img, {
+        scrollTrigger: {
+            trigger: img,
+            start: "top 90%",
+        },
+        opacity: 0,
+        scale: 1.1,
+        duration: 2,
+        ease: "power2.out"
+    });
+});
 
 
-    /////////////////////////////////////////
-    //
-    // Animaciones dentro de la sección de tratamientos/servicios para mejorar la experiencia visual al hacer scroll
-    //  
-    ////////////////////////////////////////
-
-    
-     // Animación de entrada para los textos al hacer scroll (utilizando ScrollTrigger para activar la animación cuando el elemento entra en el viewport)
-        gsap.utils.toArray('.reveal-text').forEach(section => {
-            gsap.from(section, {
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 80%",
-                },
-                y: 50,
-                opacity: 0,
-                duration: 1.5,
-                ease: "power4.out"
-            });
-        });
-
-        // Animación suave de aparición para las imágenes
-        gsap.utils.toArray('img').forEach(img => {
-            gsap.from(img, {
-                scrollTrigger: {
-                    trigger: img,
-                    start: "top 90%",
-                },
-                opacity: 0,
-                scale: 1.1,
-                duration: 2,
-                ease: "power2.out"
-            });
-        });
-
-      
 /**
  * CONFIGURACIÓN DE SUPABASE
  */
 const SUPABASE_URL = 'https://dademmbghkpndygsmwcu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZGVtbWJnaGtwbmR5Z3Ntd2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzgxNTIsImV4cCI6MjA5MjExNDE1Mn0.AAdZaCJ3hmgHIchQASqNrNd1HdOqYiimFmjMUb3-kVg';
 
-// Usamos 'supabaseClient' para evitar conflictos con la librería global
 let supabaseClient;
 
 try {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 } catch (error) {
-    console.error("DETALLE DEL ERROR:", error); // específicamente para errores de inicialización
+    console.error("DETALLE DEL ERROR:", error);
     alert("Error: " + (error.message || "Error desconocido"));
 }
 
+
 /**
- * MANEJO DE LA INTERFAZ (MODALES Y VISTAS)
+ * GESTIÓN DE MODALES Y VISTAS
  */
 function toggleModal(id) {
     const modal = document.getElementById(id);
@@ -148,25 +87,24 @@ function switchView(view) {
     }
 }
 
+
 /**
  * LÓGICA DE REGISTRO DE USUARIOS
  */
 async function executeRegister() {
-    // Obtenemos los valores de los inputs
     const nombre = document.getElementById('r-name').value.trim();
     const documento = document.getElementById('r-doc').value.trim();
     const telefono = document.getElementById('r-phone').value.trim();
     const email = document.getElementById('r-email').value.trim();
     const password = document.getElementById('r-pass').value.trim();
 
-    // Validación básica
     if (!email || !password || !nombre || !documento) {
         alert("Por favor, completa los campos obligatorios (Nombre, Documento, Correo y Contraseña).");
         return;
     }
 
     try {
-        // 1. Crear el usuario en el sistema de autenticación de Supabase
+        // 1. Crear el usuario en Auth
         const { data: authData, error: authError } = await supabaseClient.auth.signUp({
             email: email,
             password: password,
@@ -175,10 +113,10 @@ async function executeRegister() {
         if (authError) throw authError;
 
         if (authData.user) {
-            // 2. Guardar los datos adicionales en la tabla 'perfiles'
+            // 2. SOLUCIÓN: Usamos .upsert() para fusionar los datos con el trigger sin duplicar llaves
             const { error: profileError } = await supabaseClient
                 .from('perfiles')
-                .insert([
+                .upsert([
                     { 
                         id: authData.user.id, 
                         nombre_completo: nombre, 
@@ -191,7 +129,7 @@ async function executeRegister() {
             if (profileError) throw profileError;
 
             alert("¡Registro exitoso! Ya puedes iniciar sesión.");
-            switchView('login'); // Redirigir al login dentro del modal
+            switchView('login'); 
         }
     } catch (error) {
         console.error("Error en registro:", error);
@@ -199,34 +137,56 @@ async function executeRegister() {
     }
 }
 
+
 /**
- * LÓGICA DE INICIO DE SESIÓN
+ * LÓGICA DE INICIO DE SESIÓN CENTRALIZADO
  */
 async function executeLogin() {
-    const email = document.getElementById('l-email').value.trim();
+    // Nota: l-email ahora puede recibir tanto correos como el texto "admin"
+    const identificador = document.getElementById('l-email').value.trim();
     const password = document.getElementById('l-pass').value.trim();
 
-    if (!email || !password) {
-        alert("Ingresa correo y contraseña.");
+    if (!identificador || !password) {
+        alert("Ingresa tu usuario/correo y contraseña.");
         return;
     }
 
     try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: email,
+        // 1. PRIMERA VALIDACIÓN: Verificar si es el Administrador
+        const { data: adminCheck, error: adminError } = await supabaseClient
+            .from('administradores')
+            .select('*')
+            .eq('usuario', identificador)
+            .eq('password', password)
+            .maybeSingle();
+
+        if (adminCheck) {
+            // Es un administrador válido
+            alert("Acceso de Administrador detectado. Redirigiendo al panel...");
+            localStorage.setItem('isAdmin', 'true'); // Guardar sesión local
+            window.location.href = "admin.html";
+            return; // Detenemos la ejecución aquí
+        }
+
+        // 2. SEGUNDA VALIDACIÓN: Intentar inicio de sesión normal en Auth para pacientes
+        const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+            email: identificador,
             password: password,
         });
 
-        if (error) throw error;
+        if (authError) throw authError;
 
-        alert("Ingreso exitoso.");
-        toggleModal('modal-auth');
-        checkUser(); // Actualizar la interfaz inmediatamente
+        if (authData.user) {
+            alert("Ingreso exitoso.");
+            toggleModal('modal-auth');
+            checkUser(); 
+        }
     } catch (error) {
         console.error("Error en login:", error);
-        alert("Error de acceso: " + error.message);
+        alert("Credenciales incorrectas o usuario no encontrado.");
     }
 }
+
 
 /**
  * GESTIÓN DE SESIÓN Y ESTADO DE LA UI
@@ -239,49 +199,72 @@ async function checkUser() {
         const authDisplay = document.getElementById('auth-display');
 
         if (user && authDisplay) {
-            // Usuario está logueado: Mostramos su nombre/correo y botón de cerrar sesión
-            const displayName = user.email.split('@')[0].toUpperCase();
+            const { data: perfil, error } = await supabaseClient
+                .from('perfiles')
+                .select('nombre_completo')
+                .eq('id', user.id)
+                .single();
+
+            let nombreMostrar = user.email.split('@')[0];
+            
+            if (perfil && perfil.nombre_completo) {
+                nombreMostrar = perfil.nombre_completo.split(' ')[0];
+            }
+
             authDisplay.innerHTML = `
-                <div class="flex items-center gap-6">
-                    <span class="text-[10px] text-gold tracking-[0.2em] font-medium">HOLA, ${displayName}</span>
-                    <button onclick="logout()" class="nav-link text-[10px] opacity-60 hover:opacity-100">CERRAR SESIÓN</button>
-                </div>
+                <div class="flex items-center gap-4">
+            <span class="text-[12px] text-gold font-medium">Hola, ${nombreMostrar.toUpperCase()}</span>
+            <a href="citas.html" class="nav-link w-full text-center md:w-auto">MIS RESERVAS</a>
+            <button onclick="logout()" class="nav-link text-[12px] opacity-60 hover:opacity-100">CERRAR SESIÓN</button>
+        </div>
             `;
         }
     } catch (error) {
-        console.log("No hay sesión activa.");
+        console.log("No hay sesión activa o hubo un error al obtener el perfil.");
     }
 }
 
 async function logout() {
     await supabaseClient.auth.signOut();
-    location.reload(); // Recargar para limpiar el estado de la web
+    location.reload(); 
 }
+
 
 /**
  * CONTROL DE AGENDAMIENTO
  */
-function handleBookingClick() {
-    supabaseClient.auth.getUser().then(({ data }) => {
-        if (data.user) {
-            // Aquí puedes redirigir a tu formulario de citas o mostrar otro modal
-            alert("Accediendo al sistema de citas...");
-            window.location.href = "#"; // Cambiar por la URL real
+async function handleBookingClick() {
+    const loadingOverlay = document.getElementById('loading-overlay');
+
+    try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+
+        if (user) {
+            if (loadingOverlay) {
+                loadingOverlay.classList.remove('hidden');
+                loadingOverlay.classList.add('flex');
+            }
+
+            setTimeout(() => {
+                window.location.href = "agendar.html";
+            }, 800);
+            
         } else {
             alert("Para agendar una cita, primero debes iniciar sesión.");
             toggleModal('modal-auth');
         }
-    });
+    } catch (error) {
+        console.error("Error al verificar sesión:", error);
+    }
 }
+
 
 /**
  * INICIALIZACIÓN AL CARGAR LA PÁGINA
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Verificar si hay una sesión activa al abrir la web
     checkUser();
 
-    // Inicializar iconos de Lucide (X del modal, etc)
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
