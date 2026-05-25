@@ -30,8 +30,8 @@ class Historial:
         else:
             for i in self.__citas:
                 
-               print(f"Fecha: {i.getDia()}, Hora: {i.getHora()}, Usuario: {i.getUsuario().getNombre()}, Servicio: {i.getServicio().getNombre()}, Id: {i.getId()}")
-               
+                print(f"Fecha: {i.getDia()}, Hora: {i.getHora()}, Usuario: {i.getUsuario().getNombre()}, Servicio: {i.getServicio().getNombre()}, Id: {i.getId()}")
+                
                 
 
 usuario = Usuario("juan", "C:C", 1111, "1234", "name@gmail")
