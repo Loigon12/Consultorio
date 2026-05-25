@@ -8,7 +8,12 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+  (function(){
+     emailjs.init("nPilnrWrB9obBsp70"); 
+  })();
+</script>
 <style>
 /* ════════════════════════════════════════════
    🎨 TOKENS — ajusta aquí escala y colores
@@ -165,7 +170,6 @@ select:focus, input[type="text"]:focus {
 <div class="card">
   <h2>Agendar Cita</h2>
 
-  <!-- Servicio -->
   <div>
     <label>Servicio</label>
     <select id="c-servicio">
@@ -178,13 +182,11 @@ select:focus, input[type="text"]:focus {
     </select>
   </div>
 
-  <!-- Fecha -->
   <div>
     <label>Fecha</label>
     <input type="text" id="c-fecha" placeholder="Selecciona un día…" readonly>
   </div>
 
-  <!-- Horas -->
   <div id="wrap-horas">
     <label>Horario disponible</label>
     <div id="grid-horas"></div>
@@ -277,19 +279,26 @@ async function agendarCita() {
   btn.disabled = true;
   msg.textContent = 'Verificando disponibilidad…';
 
-  // Re-verificar que el slot sigue libre
+  // Re-verificar que el slot sigue libre en la base de datos
   const { data: check } = await db.from('citas').select('id')
     .eq('fecha', fechaSel).eq('hora', horaSel).limit(1);
   if (check?.length) {
     alert('Ese horario acaba de ser reservado. Elige otro.');
     msg.textContent = '';
+    btn.disabled = false;
     await cargarHoras(new Date(fechaSel + 'T12:00'), fechaSel);
     horaSel = null;
     return;
   }
 
+  // Verificar estado de la sesión del usuario
   const { data: { user }, error: uErr } = await db.auth.getUser();
-  if (uErr || !user) { alert('Debes iniciar sesión.'); msg.textContent = ''; btn.disabled = false; return; }
+  if (uErr || !user) { 
+    alert('Debes iniciar sesión.'); 
+    msg.textContent = ''; 
+    btn.disabled = false; 
+    return; 
+  }
 
   msg.textContent = 'Guardando…';
   const { error } = await db.from('citas').insert([
@@ -298,15 +307,31 @@ async function agendarCita() {
 
   if (error) {
     alert('Error: ' + error.message);
+    msg.textContent = '';
+    btn.disabled = false;
   } else {
-    alert('¡Cita solicitada! Pendiente de confirmación.');
-    document.getElementById('c-servicio').selectedIndex = 0;
-    document.getElementById('c-fecha')._flatpickr.clear();
-    document.getElementById('wrap-horas').classList.remove('visible');
-    fechaSel = horaSel = null;
+    // --- NUEVA LÓGICA EMAILJS ---
+    msg.textContent = 'Enviando confirmación al correo...';
+    try {
+        const templateParams = {
+            email_paciente: user.email,
+            fecha: fechaSel,
+            hora: horaSel,
+            servicio: servicio
+        };
+        
+        await emailjs.send('service_consultorio', 'template_nuevareserva', templateParams);
+    } catch (emailError) {
+        console.error('La cita se guardó pero falló el envío del correo:', emailError);
+    }
+    // ----------------------------
+
+    alert('¡Reserva solicitada con éxito! Revisa tu correo.');
+    msg.textContent = '';
+    btn.disabled = false;
+    await cargarHoras(new Date(fechaSel + 'T12:00'), fechaSel);
+    horaSel = null;
   }
-  msg.textContent = '';
-  syncBtn();
 }
 </script>
 </body>

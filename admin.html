@@ -3,70 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin - Solicitudes</title>
+    <title>Panel de Administración - Control de Clínicas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #dbeafe; /* Fondo azul claro */
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
     </style>
 </head>
-<body class="min-h-screen font-sans text-gray-800">
+<body class="min-h-screen text-slate-800 antialiased">
 
-    <div id="login-container" class="min-h-screen flex items-center justify-center px-4">
-        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm border border-gray-100">
-            <h2 class="text-2xl font-light text-blue-800 text-center mb-6 tracking-wide">Ingrese Credenciales</h2>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs text-gray-500 uppercase tracking-widest mb-1">Usuario</label>
-                    <input type="text" id="admin-user" class="w-full bg-blue-50 text-gray-800 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 uppercase tracking-widest mb-1">Contraseña</label>
-                    <input type="password" id="admin-pass" class="w-full bg-blue-50 text-gray-800 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
-                </div>
-                <button onclick="iniciarSesionAdmin()" class="w-full bg-blue-700 text-white font-medium tracking-widest py-3 rounded hover:bg-blue-800 transition duration-300 mt-2">
-                    INGRESAR
-                </button>
-                <p id="login-error" class="text-red-500 text-xs text-center hidden mt-2">Credenciales incorrectas.</p>
-            </div>
-        </div>
+    <div id="loading-admin" class="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white gap-4">
+        <i data-lucide="shield" class="w-12 h-12 animate-pulse text-blue-400"></i>
+        <p class="text-sm font-medium tracking-wide text-slate-300">Verificando credenciales de seguridad...</p>
     </div>
 
-    <div id="dashboard-container" class="hidden max-w-6xl mx-auto p-8">
-        <div class="flex justify-between items-center mb-8 border-b pb-4">
-            <h2 class="text-3xl font-light text-blue-800">Gestión de Citas e Historial</h2>
-            <div class="space-x-2">
-                <button onclick="cargarCitas()" class="text-xs bg-white border border-gray-200 px-4 py-2 rounded hover:bg-gray-50 transition shadow-sm">Actualizar</button>
-                <button onclick="cerrarSesionAdmin()" class="text-xs bg-red-50 text-red-600 border border-red-100 px-4 py-2 rounded hover:bg-red-100 transition shadow-sm">Salir</button>
-            </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden mb-10">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-blue-50 text-gray-500 text-xs uppercase tracking-widest">
-                        <th class="p-4 border-b font-medium">Paciente</th>
-                        <th class="p-4 border-b font-medium">Fecha y Hora</th>
-                        <th class="p-4 border-b font-medium">Servicio</th>
-                        <th class="p-4 border-b font-medium text-center">Acciones / Historial</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-citas" class="text-sm text-gray-700">
-                    </tbody>
-            </table>
-        </div>
-
-        <div id="seccion-historial" class="hidden bg-white p-6 rounded-lg shadow-inner border-l-4 border-blue-500">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-semibold text-blue-900" id="nombre-paciente-historial">Historial del Paciente</h3>
-                <button onclick="cerrarHistorial()" class="text-red-500 hover:underline text-sm uppercase tracking-tighter">Cerrar Historial</button>
-            </div>
-            <div id="lista-historial" class="space-y-3">
+    <div id="dashboard-container" class="hidden min-h-screen">
+        <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-slate-900 text-white rounded-lg">
+                        <i data-lucide="activity" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold text-slate-900 tracking-tight block">Consultorio Rosa Ducuara</span>
+                        <span class="text-[10px] uppercase font-bold tracking-widest text-emerald-600 block bg-emerald-50 px-1.5 py-0.5 rounded-md mt-0.5 w-max">Gestión de citas</span>
+                    </div>
                 </div>
-        </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="cargarCitas()" class="flex items-center gap-2 text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl hover:bg-slate-100 transition shadow-sm">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Actualizar
+                    </button>
+                    <button onclick="cerrarSesionAdmin()" class="flex items-center gap-2 text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-100 px-4 py-2.5 rounded-xl hover:bg-rose-100 transition shadow-sm">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="max-w-7xl mx-auto p-6 md:p-8 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider block">Total Gestión</span>
+                        <span id="stat-total" class="text-3xl font-bold text-slate-900 block mt-1">0</span>
+                    </div>
+                    <div class="p-4 bg-blue-50 text-blue-600 rounded-xl"><i data-lucide="calendar" class="w-6 h-6"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider block">Aceptadas exitosas</span>
+                        <span id="stat-aceptadas" class="text-3xl font-bold text-emerald-600 block mt-1">0</span>
+                    </div>
+                    <div class="p-4 bg-emerald-50 text-emerald-600 rounded-xl"><i data-lucide="check-circle" class="w-6 h-6"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider block">Pendientes de revisión</span>
+                        <span id="stat-pendientes" class="text-3xl font-bold text-amber-500 block mt-1">0</span>
+                    </div>
+                    <div class="p-4 bg-amber-50 text-amber-500 rounded-xl"><i data-lucide="clock" class="w-6 h-6"></i></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-900 tracking-tight">Listado de Solicitudes</h3>
+                    <span class="text-xs text-slate-500">Organizado cronológicamente</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <th class="p-4 pl-6 font-semibold">Paciente</th>
+                                <th class="p-4 font-semibold">Fecha y Hora</th>
+                                <th class="p-4 font-semibold">Servicio Odontológico</th>
+                                <th class="p-4 font-semibold w-1/3">Diagnóstico / Evolución Clínica</th>
+                                <th class="p-4 pr-6 font-semibold text-center">Gestión / Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-citas" class="text-sm text-slate-700 divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="seccion-historial" class="hidden bg-white p-6 rounded-2xl shadow-lg border border-slate-200 border-l-4 border-slate-900 transition-all">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-2 text-slate-900">
+                        <i data-lucide="folder-open" class="w-5 h-5"></i>
+                        <h3 class="text-lg font-bold tracking-tight" id="nombre-paciente-historial">Historial Clínico</h3>
+                    </div>
+                    <button onclick="cerrarHistorial()" class="text-slate-400 hover:text-slate-600 text-xs uppercase tracking-wider font-semibold flex items-center gap-1">
+                        <i data-lucide="x" class="w-4 h-4"></i> Cerrar Panel
+                    </button>
+                </div>
+                <div id="lista-historial" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+        </main>
     </div>
 
     <script>
@@ -74,75 +108,161 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZGVtbWJnaGtwbmR5Z3Ntd2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MzgxNTIsImV4cCI6MjA5MjExNDE1Mn0.AAdZaCJ3hmgHIchQASqNrNd1HdOqYiimFmjMUb3-kVg';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Ya no cargamos las citas automáticamente al abrir la página, 
-        // ahora esperamos a que el admin inicie sesión.
+        // --- VERIFICACIÓN DE SEGURIDAD AUTOMÁTICA ---
+        async function verificarAccesoAdmin() {
+            const isAdmin = localStorage.getItem('isAdmin');
 
-        // --- LÓGICA DE LOGIN ---
-        async function iniciarSesionAdmin() {
-            const usuario = document.getElementById('admin-user').value.trim();
-            const password = document.getElementById('admin-pass').value.trim();
-            const msgError = document.getElementById('login-error');
-
-            if (!usuario || !password) return;
-
-            // Consultar a Supabase si existe ese usuario y contraseña
-            const { data, error } = await supabaseClient
-                .from('administradores')
-                .select('*')
-                .eq('usuario', usuario)
-                .eq('password', password)
-                .single();
-
-            if (data) {
-                // Login exitoso: Ocultar login, mostrar dashboard y cargar datos
-                document.getElementById('login-container').classList.add('hidden');
+            if (isAdmin === 'true') {
+                document.getElementById('loading-admin').classList.add('hidden');
                 document.getElementById('dashboard-container').classList.remove('hidden');
-                msgError.classList.add('hidden');
-                cargarCitas(); 
+                cargarCitas();
             } else {
-                // Login fallido
-                msgError.classList.remove('hidden');
+                alert("Acceso denegado: Esta área es exclusiva para la administración.");
+                window.location.href = "index.html";
             }
         }
 
-        function cerrarSesionAdmin() {
-            // Recargar la página limpia todo el estado visual y vuelve al login
-            window.location.reload();
+        async function cerrarSesionAdmin() {
+            localStorage.removeItem('isAdmin');
+            window.location.href = "index.html";
         }
 
-        // --- LÓGICA DEL PANEL (Existente) ---
+        // --- CARGAR CITAS ---
         async function cargarCitas() {
             const tbody = document.getElementById('tabla-citas');
-            tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">Cargando datos...</td></tr>';
-            
+            tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400"><i data-lucide="loader" class="w-6 h-6 animate-spin mx-auto mb-2 text-slate-500"></i> Procesando registros...</td></tr>';
+            lucide.createIcons();
+
             const { data: citas, error } = await supabaseClient
                 .from('citas')
                 .select(`*, perfiles ( nombre_completo )`)
                 .order('fecha', { ascending: false });
 
-            if (error) { console.error(error); return; }
+            if (error) {
+                console.error("Error al obtener citas:", error);
+                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-rose-500 font-medium">Error al conectar con la base de datos.</td></tr>';
+                return;
+            }
+
+            document.getElementById('stat-total').innerText = citas.length;
+            document.getElementById('stat-aceptadas').innerText = citas.filter(c => c.estado === 'aceptada').length;
+            document.getElementById('stat-pendientes').innerText = citas.filter(c => c.estado === 'pendiente').length;
 
             tbody.innerHTML = '';
+            if(citas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400">No existen citas agendadas.</td></tr>';
+                return;
+            }
+
             citas.forEach(cita => {
                 const nombre = cita.perfiles ? cita.perfiles.nombre_completo : 'Usuario Desconocido';
+                const diagnosticoActual = cita.diagnostico ? cita.diagnostico : '';
+                const refId = String(cita.id).substring(0, 6).toUpperCase();
+                
+                let estadoBadge = '';
+                if (cita.estado === 'pendiente') {
+                    estadoBadge = `<span class="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full"><span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>Pendiente</span>`;
+                } else if (cita.estado === 'aceptada') {
+                    estadoBadge = `<span class="inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>Aceptada</span>`;
+                } else {
+                    estadoBadge = `<span class="inline-flex items-center gap-1.5 text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full"><span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>Denegada</span>`;
+                }
+
                 const fila = `
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="p-4 font-bold text-blue-900">${nombre}</td>
-                        <td class="p-4">${cita.fecha} | ${cita.hora}</td>
-                        <td class="p-4">${cita.servicio}</td>
-                        <td class="p-4 text-center space-x-2">
-                            ${cita.estado === 'pendiente' ? `
-                                <button onclick="actualizarEstado('${cita.id}', 'aceptada')" class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs transition">Aceptar</button>
-                                <button onclick="actualizarEstado('${cita.id}', 'denegada')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition">Denegar</button>
-                            ` : `<span class="text-xs font-medium uppercase ${cita.estado === 'aceptada' ? 'text-green-600' : 'text-red-600'}">${cita.estado}</span>`}
-                            
-                            <button onclick="verHistorial('${cita.usuario_id}', '${nombre}')" class="ml-4 text-blue-600 hover:text-blue-800 underline text-xs">Ver Historial</button>
+                    <tr class="hover:bg-slate-50/80 transition duration-150">
+                        <td class="p-4 pl-6">
+                            <div class="font-semibold text-slate-900">${nombre}</div>
+                            <div class="text-[11px] text-slate-400 tracking-wider">REF-ID: #${refId}</div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center gap-1.5 text-slate-700 font-medium"><i data-lucide="calendar-days" class="w-3.5 h-3.5 text-slate-400"></i> ${cita.fecha}</div>
+                            <div class="flex items-center gap-1.5 text-[12px] text-slate-500 mt-0.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i> ${cita.hora}</div>
+                        </td>
+                        <td class="p-4 font-medium text-slate-800">${cita.servicio}</td>
+                        <td class="p-4">
+                            <div class="flex items-center gap-2 max-w-sm">
+                                <input type="text" id="diagnostico-${cita.id}" value="${diagnosticoActual}" placeholder="Agregar diagnóstico clínico..." 
+                                    class="w-full bg-slate-50 border border-slate-200 text-xs px-3 py-2 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all">
+                                <button onclick="guardarDiagnostico('${cita.id}')" class="p-2 bg-slate-100 hover:bg-slate-900 text-slate-600 hover:text-white rounded-xl transition-all">
+                                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="p-4 pr-6 text-center">
+                            <div class="flex items-center justify-center gap-3">
+                                ${cita.estado === 'pendiente' ? `
+                                    <div class="flex gap-1.5">
+                                        <button onclick="actualizarEstado('${cita.id}', 'aceptada')" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-sm">Aceptar</button>
+                                        <button onclick="actualizarEstado('${cita.id}', 'denegada')" class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-sm">Denegar</button>
+                                    </div>
+                                ` : estadoBadge}
+                                <div class="h-6 w-[1px] bg-slate-200 mx-1"></div>
+                                <button onclick="verHistorial('${cita.usuario_id}', '${nombre}')" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                <button onclick="eliminarCita('${cita.id}')" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
                         </td>
                     </tr>
                 `;
                 tbody.innerHTML += fila;
             });
+            lucide.createIcons();
         }
+
+        // Función corregida apuntando a la columna exacta 'diagnostico' de Postgres
+        async function guardarDiagnostico(id) {
+            const texto = document.getElementById(`diagnostico-${id}`).value.trim();
+            
+            const { error } = await supabaseClient
+                .from('citas')
+                .update({ diagnostico: texto }) 
+                .eq('id', id);
+
+            if (error) {
+                console.error("Error al guardar en Supabase:", error);
+                alert("No se pudo guardar el diagnóstico: " + error.message);
+                return;
+            }
+
+            alert("Diagnóstico guardado correctamente.");
+            cargarCitas();
+        }
+
+        async function eliminarCita(id) {
+    if (confirm("¿Seguro que deseas eliminar permanentemente esta cita?")) {
+        // Capturamos el error que devuelva Supabase
+        const { error } = await supabaseClient
+            .from('citas')
+            .delete()
+            .eq('id', id);
+
+        // Si hay un error (ej. permisos o conexión), lo mostramos
+        if (error) {
+            console.error("Error al eliminar en Supabase:", error);
+            alert("No se pudo eliminar la cita: " + error.message);
+            return; // Detenemos la función para que no recargue la tabla
+        }
+
+        // Si no hay error, confirmamos y actualizamos la vista
+        alert("Cita eliminada correctamente.");
+        cargarCitas();
+    }
+}
+
+        async function actualizarEstado(id, nuevoEstado, emailPaciente = null) {
+        const { error } = await supabaseClient.from('citas').update({ estado: nuevoEstado }).eq('id', id);
+    
+        if (!error && nuevoEstado === 'aceptada' && emailPaciente) {
+        try {
+            await emailjs.send('service_consultorio', 'template_confirmada', {
+                email_paciente: emailPaciente
+            });
+            console.log("Correo de confirmación enviado");
+            } catch (err) {
+            console.error("Error al enviar correo de confirmación:", err);
+            }
+        }
+        cargarCitas();
+}
 
         async function verHistorial(usuarioId, nombre) {
             const seccion = document.getElementById('seccion-historial');
@@ -150,8 +270,8 @@
             const titulo = document.getElementById('nombre-paciente-historial');
 
             seccion.classList.remove('hidden');
-            titulo.innerText = `Historial de: ${nombre}`;
-            lista.innerHTML = '<p class="text-sm text-gray-500">Cargando historial...</p>';
+            titulo.innerText = `Historial Clínico: ${nombre}`;
+            lista.innerHTML = '<p class="text-xs text-slate-400">Compilando datos...</p>';
 
             const { data: historial, error } = await supabaseClient
                 .from('citas')
@@ -159,33 +279,35 @@
                 .eq('usuario_id', usuarioId)
                 .order('fecha', { ascending: false });
 
-            if (error) return;
+            if (error || !historial) {
+                lista.innerHTML = '<p class="text-xs text-rose-500">Error al compilar el historial.</p>';
+                return;
+            }
 
             lista.innerHTML = '';
             historial.forEach(h => {
+                const diagnosticoCita = h.diagnostico ? h.diagnostico : 'Sin diagnóstico anotado.';
                 lista.innerHTML += `
-                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded border border-gray-100">
-                        <div>
-                            <p class="text-sm font-medium text-gray-800">${h.servicio}</p>
-                            <p class="text-xs text-gray-500">${h.fecha} a las ${h.hora}</p>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 flex flex-col gap-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-sm font-bold text-slate-900">${h.servicio}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full uppercase font-bold ${h.estado === 'aceptada' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}">${h.estado}</span>
                         </div>
-                        <span class="text-[10px] px-2 py-1 rounded-full uppercase font-bold ${h.estado === 'aceptada' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">
-                            ${h.estado}
-                        </span>
+                        <span class="text-xs text-slate-400">${h.fecha} • ${h.hora}</span>
+                        <div class="bg-white p-2 rounded-lg text-[12px] text-slate-600 italic"><strong>Diagnóstico:</strong> "${diagnosticoCita}"</div>
                     </div>
                 `;
             });
             seccion.scrollIntoView({ behavior: 'smooth' });
         }
 
-        function cerrarHistorial() {
-            document.getElementById('seccion-historial').classList.add('hidden');
-        }
+        function cerrarHistorial() { document.getElementById('seccion-historial').classList.add('hidden'); }
 
-        async function actualizarEstado(id, nuevo) {
-            await supabaseClient.from('citas').update({ estado: nuevo }).eq('id', id);
-            cargarCitas();
-        }
+        // Inicializar al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            verificarAccesoAdmin();
+            lucide.createIcons();
+        });
     </script>
 </body>
 </html>
